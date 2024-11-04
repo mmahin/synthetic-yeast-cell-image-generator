@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 from PIL import Image, ImageDraw
 import random
-
+import os
 
 def draw_circle_with_intensity_variation(img, center, radius, base_color, noise_level):
     # Create an array of points around the circle
@@ -111,3 +111,26 @@ def save_synthetic_data(image, mask, image_path="data/output/synthetic_image.png
     cv2.imwrite(mask_path, mask)
     print(f"Synthetic image saved at {image_path}")
     print(f"Synthetic mask saved at {mask_path}")
+
+
+def load_generated_data():
+    # Paths to your generated data
+    image_dir = 'data/output/images/'  # Adjust this path as needed
+    mask_dir = 'data/output/masks/'  # Adjust this path as needed
+
+    images = []
+    masks = []
+
+    for filename in os.listdir(image_dir):
+        if filename.endswith('.png'):  # Assuming you save images as PNG
+            image_path = os.path.join(image_dir, filename)
+            mask_path = os.path.join(mask_dir, filename.replace('.png', '_mask.png'))  # Adjust accordingly
+
+            image = cv2.imread(image_path)
+            mask = cv2.imread(mask_path, cv2.IMREAD_UNCHANGED)  # Load mask with unchanged flag
+
+            images.append(image)
+            masks.append(mask)
+
+    # Convert to numpy arrays
+    return np.array(images), np.array(masks)

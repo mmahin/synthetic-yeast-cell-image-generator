@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 from PIL import Image, ImageTk
 import cv2
+import numpy as np
 from app.generator.cell_generator import generate_synthetic_yeast_image, save_synthetic_data
 
 class SyntheticImageGeneratorApp:
@@ -37,9 +38,17 @@ class SyntheticImageGeneratorApp:
 
         tk.Button(self.root, text="Generate Image", command=self.generate_image).grid(row=5, columnspan=2)
 
+        # Labels for image and mask previews
+        tk.Label(self.root, text="Generated Image Preview").grid(row=6, column=0, columnspan=2)
+        tk.Label(self.root, text="Generated Mask Preview").grid(row=6, column=2, columnspan=2)
+
         # Canvas for previewing the generated image
-        self.canvas = tk.Canvas(self.root, width=256, height=256)
-        self.canvas.grid(row=6, columnspan=2)
+        self.image_canvas = tk.Canvas(self.root, width=256, height=256)
+        self.image_canvas.grid(row=7, column=0, columnspan=2)
+
+        # Canvas for previewing the mask
+        self.mask_canvas = tk.Canvas(self.root, width=256, height=256)
+        self.mask_canvas.grid(row=7, column=2, columnspan=2)
 
     def generate_image(self):
         try:
@@ -51,28 +60,44 @@ class SyntheticImageGeneratorApp:
 
             # Generate synthetic image and mask (OpenCV format)
             image, mask = generate_synthetic_yeast_image(
-                width=256, height=256,
+                width=width, height=height,
                 cell_count=count,
                 cell_radius_range=radius_range
             )
 
-            # Convert OpenCV image to PIL format
-            image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # Convert BGR to RGB
+
+
+            # Scale image from uint16 to uint8 for display
+            image_scaled = (image / 256).astype(np.uint8)  # Dividing by 256 scales 0–65535 to 0–255
+            # Convert OpenCV image to RGB for display with PIL
+            image_rgb = cv2.cvtColor(image_scaled, cv2.COLOR_BGR2RGB)
             pil_image = Image.fromarray(image_rgb)
-
-            # Resize for preview
             pil_image.thumbnail((256, 256), Image.ANTIALIAS)
-            self.photo = ImageTk.PhotoImage(pil_image)
+            self.image_photo = ImageTk.PhotoImage(pil_image)
 
-            # Update the canvas with the new image
-            self.canvas.delete("all")  # Clear any existing image
-            self.canvas.create_image(128, 128, image=self.photo)
+            # Update image canvas with the new image
+            self.image_canvas.delete("all")
+            self.image_canvas.create_image(128, 128, image=self.image_photo)
 
+            # Check mask shape and handle accordingly
+            if len(mask.shape) == 2:  # Single channel mask
+                mask_rgb = cv2.cvtColor(mask, cv2.COLOR_GRAY2RGB)  # Convert grayscale to RGB
+            elif len(mask.shape) == 3:  # Already an RGB mask
+                mask_rgb = mask  # No need for conversion
+            else:
+                raise ValueError("Invalid mask shape. Expected 2D or 3D array.")
+            pil_mask = Image.fromarray(mask_rgb)
+            pil_mask.thumbnail((256, 256), Image.ANTIALIAS)
+            self.mask_photo = ImageTk.PhotoImage(pil_mask)
+            # Update mask canvas with the new mask
+            self.mask_canvas.delete("all")
+            self.mask_canvas.create_image(128, 128, image=self.mask_photo)
             # Optionally save the generated images
-            save_synthetic_data(pil_image, mask)
+            save_synthetic_data(image, mask)
 
         except Exception as e:
-            messagebox.showerror("Error", str(e))
+            print(str(e))
+            ...
 
 if __name__ == "__main__":
     root = tk.Tk()
