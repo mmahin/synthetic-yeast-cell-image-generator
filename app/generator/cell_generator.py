@@ -51,7 +51,7 @@ def interpolate_color(start_color , end_color , steps):
         colors.append((blue, green, red))  # BGR format
     return colors
 def generate_synthetic_yeast_image(width=256, height=256, cell_count=10,
-                                    fluorescence_level=(1000, 50000),
+                                    fluorescence_level=1,
                                     cell_radius_range=(10, 20), noise_level=0.01 ):
     """
     Generates a synthetic yeast cell image and corresponding binary mask.
@@ -85,7 +85,7 @@ def generate_synthetic_yeast_image(width=256, height=256, cell_count=10,
         intensity_factor = np.random.uniform(0.1, 1.0)
 
         # Calculate yellow color with varying intensity
-        yellow = (0, 65535*intensity_factor , 65535*intensity_factor)
+        yellow = (0, 65535*fluorescence_level , 65535*fluorescence_level)
 
         # Draw filled circle (simulating a yeast cell) on both the image and mask
         # Draw the circle with varying intensity
@@ -102,11 +102,16 @@ def save_synthetic_data(image, mask, image_path="data/output/synthetic_image.png
     Saves synthetic yeast image and mask to specified file paths.
 
     Parameters:
-        image (PIL Image): Synthetic yeast cell image.
-        mask (PIL Image): Corresponding binary mask.
+        image (numpy.ndarray): Synthetic yeast cell image.
+        mask (numpy.ndarray): Corresponding binary mask.
         image_path (str): File path to save the synthetic image.
         mask_path (str): File path to save the mask.
     """
+    # Ensure the directories exist
+    os.makedirs(os.path.dirname(image_path), exist_ok=True)
+    os.makedirs(os.path.dirname(mask_path), exist_ok=True)
+
+    # Save the image and mask
     cv2.imwrite(image_path, image)
     cv2.imwrite(mask_path, mask)
     print(f"Synthetic image saved at {image_path}")
