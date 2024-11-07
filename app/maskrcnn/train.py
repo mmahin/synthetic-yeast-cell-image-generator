@@ -52,6 +52,7 @@ def evaluate(model, data_loader, device):
     model.eval()  # Set the model to evaluation mode
     total_iou = 0
     num_samples = 0
+    low_threshold = 0.1  # Lower threshold to check for predictions
 
     with torch.no_grad():
         for images, targets in data_loader:
@@ -60,16 +61,22 @@ def evaluate(model, data_loader, device):
 
             # Process each image and corresponding prediction
             for i, output in enumerate(outputs):
-                pred_mask = output['masks'][0, 0] > 0.5  # Threshold mask at 0.5
-                true_mask = targets[i]['masks'][0].to(device)
+                # Check if any masks are predicted
+                if 'masks' in output and output['masks'].shape[0] > 0:
+                    # Lower the threshold for initial evaluation
+                    pred_mask = output['masks'][0, 0] > low_threshold
+                    true_mask = targets[i]['masks'][0].to(device)
 
-                # Compute Intersection over Union (IoU)
-                intersection = (pred_mask & true_mask).float().sum((1, 2))
-                union = (pred_mask | true_mask).float().sum((1, 2))
-                iou = (intersection / union).mean().item()
+                    # Compute Intersection over Union (IoU)
+                    intersection = (pred_mask & true_mask).float().sum((1, 2))
+                    union = (pred_mask | true_mask).float().sum((1, 2))
+                    iou = (intersection / union).mean().item()
 
-                total_iou += iou
-                num_samples += 1
+                    total_iou += iou
+                    num_samples += 1
+                    print(f"Sample {i+1}: IoU = {iou:.4f}")  # Print IoU for each sample
+                else:
+                    print("No masks predicted for this image.")
 
     avg_iou = total_iou / num_samples if num_samples > 0 else 0
     print(f"Average IoU: {avg_iou:.4f}")

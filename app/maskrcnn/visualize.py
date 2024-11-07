@@ -22,3 +22,5 @@ def plot_predictions(model, dataset, device):
         plt.imshow(mask[0].cpu(), alpha=0.5, cmap='jet')
     plt.axis('off')
     plt.show()
+
+

@@ -1,0 +1,42 @@
+# model_config.yaml
+
+# Model Configuration
+model:
+  architecture: "mask_rcnn"                 # Model architecture name
+  backbone: "resnet50_fpn"                  # Backbone network for feature extraction
+  pretrained: true                          # Use a pretrained model as the base
+  num_classes: 2                            # Number of classes (e.g., 1 for cell + 1 for background)
+  min_size: 256                             # Minimum input size for the model
+  max_size: 512                             # Maximum input size for the model
+  rpn_anchor_sizes: [32, 64, 128, 256, 512] # Anchor sizes for Region Proposal Network (RPN)
+  rpn_nms_thresh: 0.7                       # NMS threshold for RPN proposals
+  box_score_thresh: 0.05                    # Minimum score threshold for detected objects
+  box_nms_thresh: 0.5                       # IoU threshold for box NMS (Non-Maximum Suppression)
+
+# Training Hyperparameters
+training:
+  batch_size: 2                             # Batch size for training
+  learning_rate: 0.001                      # Initial learning rate for optimizer
+  weight_decay: 0.0005                      # Weight decay for optimizer
+  momentum: 0.9                             # Momentum for SGD optimizer (if used)
+  num_epochs: 10                            # Number of training epochs
+
+# Data Augmentation
+augmentation:
+  flip_horizontal: true                     # Enable horizontal flipping of images for augmentation
+  flip_vertical: false                      # Enable vertical flipping of images for augmentation
+  rotation_angle: 15                        # Maximum rotation angle for augmentation
+  scale_range: [0.8, 1.2]                   # Scale range for augmentation
+
+# Evaluation Settings
+evaluation:
+  iou_threshold: 0.5                        # IoU threshold for determining positive detections
+  max_detections: 100                       # Maximum number of detections per image during evaluation
+  score_threshold: 0.05                     # Score threshold for filtering detections
+
+# Logging and Checkpoints
+logging:
+  log_interval: 10                          # Interval for logging training progress
+  checkpoint_interval: 1                    # Save model checkpoint every N epochs
+  checkpoint_dir: "app/models/checkpoints"  # Directory to save checkpoints
+  log_dir: "app/logs"                       # Directory to save training logs

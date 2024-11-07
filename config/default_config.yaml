@@ -1,0 +1,32 @@
+# default_config.yaml
+
+# Paths for saving data and models
+paths:
+  data_dir: "app/data"                     # Root data directory
+  images_dir: "app/data/images"             # Directory to save synthetic images
+  masks_dir: "app/data/masks"               # Directory to save synthetic masks
+  model_save_path: "app/models/mask_rcnn.pth" # Path to save the trained Mask R-CNN model
+
+# Synthetic Image Generation Configuration
+image_generation:
+  image_width: 256                          # Width of synthetic images
+  image_height: 256                         # Height of synthetic images
+  min_cell_count: 5                         # Minimum number of cells per image
+  max_cell_count: 15                        # Maximum number of cells per image
+  cell_radius_min: 10                       # Minimum radius of cells
+  cell_radius_max: 20                       # Maximum radius of cells
+  fluorescence_level: 1.0                   # Fluorescence level for cell brightness
+  noise_level: 0.01                         # Noise level for cell boundary variation
+
+# Mask R-CNN Training Configuration
+training:
+  learning_rate: 0.001                      # Learning rate for optimizer
+  num_epochs: 10                            # Number of training epochs
+  batch_size: 2                             # Batch size for DataLoader
+  device: "cuda"                            # Device to use for training ('cuda' or 'cpu')
+
+# Evaluation and Visualization
+evaluation:
+  iou_threshold: 0.5                        # IoU threshold for evaluation
+  visualize_predictions: true               # Flag to enable/disable visualization of predictions
+  save_predictions_dir: "app/data/predictions" # Directory to save predicted mask images

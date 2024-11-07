@@ -15,7 +15,7 @@ from train import train_one_epoch, evaluate
 import torch.optim as optim
 from visualize import plot_predictions
 # Define directories for images and masks, and device configuration
-images_dir = '/app/data/output/images'
+images_dir = '/app/data/output/images/'
 masks_dir = '/app/data/output/masks/'
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
@@ -31,7 +31,7 @@ model.to(device)
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 # Training loop
-num_epochs = 2
+num_epochs = 10
 for epoch in range(num_epochs):
     train_loss = train_one_epoch(model, data_loader, optimizer, device)
     print(f"Epoch {epoch + 1}, Loss: {train_loss}")

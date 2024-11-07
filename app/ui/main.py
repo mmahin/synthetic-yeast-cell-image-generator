@@ -15,7 +15,25 @@ from app.maskrcnn.train import train_one_epoch, evaluate
 from app.maskrcnn.visualize import plot_predictions
 
 class SyntheticImageGeneratorApp:
+    """
+    Main application class that integrates the preview, generation,
+    and training panels for synthetic yeast cell image generation.
+
+    This application is designed for creating synthetic yeast cell images,
+    generating batches of images with masks, and training a Mask R-CNN model
+    for object detection and segmentation. The user interface consists of
+    three main sections:
+
+    1. Preview Panel: Allows the user to configure and preview synthetic images.
+    2. Generation Panel: Configures parameters for generating multiple synthetic images.
+    3. Training Panel: Provides configuration for training the Mask R-CNN model
+       with options to evaluate and visualize predictions.
+    """
     def __init__(self, root):
+        """
+        Initializes the main application window and its components.
+
+        """
         self.root = root
         self.root.title("Synthetic Yeast Cell Image Generator")
 
@@ -49,6 +67,15 @@ class SyntheticImageGeneratorApp:
         self.model = None
 
     def create_widgets(self):
+        """
+        Sets up the user interface elements of the preview panel, including
+        input fields for configuration values and canvases for image previews.
+        Sets up the user interface elements of the generation panel, including
+        input fields for configuration values and buttons for image generation.
+        Sets up the user interface elements of the training panel, including
+        input fields for training configuration values, training controls,
+        and evaluation/visualization buttons.
+        """
         tk.Label(self.root, text="Synthetic Yeast Cell Image Generator", font=("Arial", 14)).pack(pady=10)
 
         # Main frame with upper and bottom sections separated by a line
@@ -76,6 +103,24 @@ class SyntheticImageGeneratorApp:
         self.create_training_panel(lower_frame)
 
     def create_preview_panel(self, frame):
+        """
+        A tkinter Frame for configuring and previewing synthetic yeast cell images.
+
+        Allows the user to set parameters for image width, height, cell radius range,
+        cell count range, and fluorescence level. A preview button generates a synthetic
+        image and mask with the specified parameters, displaying them within the panel.
+
+        Attributes:
+            image_width (tk.IntVar): Width of the synthetic image.
+            image_height (tk.IntVar): Height of the synthetic image.
+            cell_radius_min (tk.IntVar): Minimum radius for yeast cells.
+            cell_radius_max (tk.IntVar): Maximum radius for yeast cells.
+            min_cell_count (tk.IntVar): Minimum number of cells in the image.
+            max_cell_count (tk.IntVar): Maximum number of cells in the image.
+            fluorescence_level (tk.DoubleVar): Level of fluorescence for the cells.
+            image_canvas (tk.Canvas): Canvas to display the generated image.
+            mask_canvas (tk.Canvas): Canvas to display the generated mask.
+        """
         preview_frame = tk.LabelFrame(frame, text="Preview Panel", font=("Arial", 12))
         preview_frame.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
 
@@ -109,6 +154,17 @@ class SyntheticImageGeneratorApp:
         self.mask_canvas.grid(row=9, column=1)
 
     def create_generation_panel(self, frame):
+        """
+        A tkinter Frame for configuring and generating synthetic yeast cell images.
+
+        This panel allows users to set parameters for the number of images to generate
+        and the save directory. It provides a button to generate synthetic yeast cell
+        images based on configurations set in the Preview Panel.
+
+        Attributes:
+            num_images (tk.IntVar): Number of synthetic images to generate.
+            save_directory (tk.StringVar): Directory where generated images and masks will be saved.
+        """
         generation_frame = tk.LabelFrame(frame, text="Generation Panel", font=("Arial", 12))
         generation_frame.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
 
@@ -122,6 +178,20 @@ class SyntheticImageGeneratorApp:
         tk.Button(generation_frame, text="Generate Images", command=self.generate_images).grid(row=3, column=0, columnspan=2, pady=5)
 
     def create_training_panel(self, frame):
+        """
+        A tkinter Frame for configuring and training a Mask R-CNN model on synthetic yeast cell images.
+
+        This panel allows the user to specify training configurations, initiate training,
+        and provides options to evaluate and visualize model performance.
+
+        Attributes:
+            images_dir (tk.StringVar): Directory containing training images.
+            masks_dir (tk.StringVar): Directory containing mask images.
+            learning_rate (tk.DoubleVar): Learning rate for model training.
+            num_epochs (tk.IntVar): Number of epochs for training.
+            model (torch.nn.Module): The Mask R-CNN model instance.
+            training_thread (threading.Thread): Thread to handle training without blocking the UI.
+        """
         # Mask RCNN Training and Testing Panel
         training_frame = tk.LabelFrame(frame, text="Mask RCNN Training and Testing Panel", font=("Arial", 12))
         training_frame.grid(row=0, column=0, columnspan=3, sticky="ew", padx=5, pady=5)
@@ -161,6 +231,13 @@ class SyntheticImageGeneratorApp:
     # Functions for image generation and model training/evaluation
 
     def generate_preview(self):
+        """
+        Generates a synthetic image and mask based on user-configured parameters.
+
+        The function uses the `generate_synthetic_yeast_image` to create a synthetic
+        image and mask with specified parameters and then updates the preview canvases
+        with the generated image and mask.
+        """
         width = self.image_width.get()
         height = self.image_height.get()
         cell_count = np.random.randint(self.min_cell_count.get(), self.max_cell_count.get() + 1)
@@ -178,6 +255,13 @@ class SyntheticImageGeneratorApp:
         self.update_preview(image, mask)
 
     def update_preview(self, image, mask):
+        """
+        Updates the preview canvases with the generated synthetic image and mask.
+
+        Args:
+            image (np.ndarray): The generated synthetic image.
+            mask (np.ndarray): The generated mask for the synthetic image.
+        """
         # Process and display image
         image_rgb = cv2.cvtColor((image / 256).astype(np.uint8), cv2.COLOR_BGR2RGB)
         pil_image = Image.fromarray(image_rgb)
@@ -194,11 +278,21 @@ class SyntheticImageGeneratorApp:
         self.mask_canvas.create_image(128, 128, image=self.mask_photo)
 
     def select_directory(self):
+        """
+        Opens a file dialog for the user to select a directory to save generated images and masks.
+        """
         selected_dir = filedialog.askdirectory()
         if selected_dir:
             self.save_directory.set(selected_dir)
 
     def generate_images(self):
+        """
+        Generates synthetic images and masks based on configurations in the preview panel and
+        saves them to the specified directory.
+
+        Uses the parameters set in the PreviewPanel to control image properties such as width,
+        height, cell count, fluorescence level, and cell radius range.
+        """
         width, height = self.image_width.get(), self.image_height.get()
         radius_range = (self.cell_radius_min.get(), self.cell_radius_max.get())
         num_images = self.num_images.get()
@@ -224,6 +318,10 @@ class SyntheticImageGeneratorApp:
         messagebox.showinfo("Generation Complete", f"{num_images} images generated and saved to {save_path}")
 
     def train_model(self):
+        """
+        Conducts the training process for the Mask R-CNN model over multiple epochs.
+        Tracks training loss per epoch and logs the progress in the text box.
+        """
         images_dir = self.images_dir.get()
         masks_dir = self.masks_dir.get()
         lr = self.learning_rate.get()
@@ -261,6 +359,10 @@ class SyntheticImageGeneratorApp:
         messagebox.showinfo("Training Complete", "Model training completed.")
 
     def evaluate_model(self):
+        """
+        Evaluates the model by calculating the Intersection over Union (IoU) score.
+        Logs the IoU score in the text box and displays it in a message box.
+        """
         data_loader = DataLoader(YeastCellDataset(self.images_dir.get(), self.masks_dir.get()),
                                  batch_size=1, shuffle=False, collate_fn=lambda x: tuple(zip(*x)))
         device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
@@ -268,6 +370,9 @@ class SyntheticImageGeneratorApp:
         messagebox.showinfo("Evaluation", f"IoU Score: {iou_score:.2f}")
 
     def visualize_predictions(self):
+        """
+        Visualizes model predictions by plotting the images and masks on a separate panel.
+        """
         device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
         plot_predictions(self.model, YeastCellDataset(self.images_dir.get(), self.masks_dir.get()), device)
 
@@ -277,11 +382,17 @@ class SyntheticImageGeneratorApp:
 
 
     def browse_images(self):
+        """
+        Opens a file dialog for selecting the directory containing training images.
+        """
         directory = filedialog.askdirectory(initialdir=self.default_images_dir, title="Select Images Directory")
         if directory:
             self.images_dir.set(directory)
 
     def browse_masks(self):
+        """
+        Opens a file dialog for selecting the directory containing mask images.
+        """
         directory = filedialog.askdirectory(initialdir=self.default_masks_dir, title="Select Masks Directory")
         if directory:
             self.masks_dir.set(directory)
