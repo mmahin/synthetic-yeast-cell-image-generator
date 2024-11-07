@@ -107,7 +107,7 @@ def generate_batch(batch_size=10, width=256, height=256, cell_count=15, cell_rad
             f"app/data/masks/synthetic_mask_{i + 1}.png"
         )
 ```
-##Training the Mask R-CNN Model
+## Training the Mask R-CNN Model
 
 This Python code sets up the Mask R-CNN model to train on a dataset of synthetic yeast cell images and masks.
 
