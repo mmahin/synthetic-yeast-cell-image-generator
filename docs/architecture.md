@@ -60,9 +60,12 @@ synthetic-yeast-cell-image-generator/
 
 ## Future Improvements
 
-- **Additional Augmentation Options**: More variety in synthetic data generation, such as rotation, flipping, or scaling, would improve model robustness.
-- **Enhanced Visualization**: Improved model prediction visualization, including metrics for tracking model improvements over time.
-- **Hyperparameter Tuning**: Options to adjust additional Mask R-CNN hyperparameters, such as batch size and optimizer choices.
+- **Improving Yeast Cell Design**: Include more shapes and color variations for Yeast cell design.
+- **Additional Augmentation Options**: Include more parameters for varied synthetic data generation, enhancing the diversity of the training dataset.
+- **Enhanced Visualization**: Support additional visualization options, such as metrics tracking for model accuracy and loss curves during training.
+- **Perfecting Deep Learning Model**: Deep learning evaluation, visualization modules need more time. Enabling interrrupt during the training process, saving and loading pretrained models need to be done. 
+- **Hyperparameter Tuning**: Provide advanced options in the UI to allow users to fine-tune Mask R-CNN hyperparameters for improved model performance.
+- **Improving Based on User Feedback**: The software, modules and UI need to be improved based on user feedback.
 
 ## Summary
 

@@ -107,7 +107,7 @@ def generate_batch(batch_size=10, width=256, height=256, cell_count=15, cell_rad
             f"app/data/masks/synthetic_mask_{i + 1}.png"
         )
 ```
-##Training the Mask R-CNN Model
+## Training the Mask R-CNN Model
 
 This Python code sets up the Mask R-CNN model to train on a dataset of synthetic yeast cell images and masks.
 
@@ -135,11 +135,12 @@ for epoch in range(10):  # Number of epochs
     print(f"Epoch {epoch + 1}, Loss: {train_loss}")
 ```
 # Future Improvements
-
+- **Improving Yeast Cell Design**: Include more shapes and color variations for Yeast cell design.
 - **Additional Augmentation Options**: Include more parameters for varied synthetic data generation, enhancing the diversity of the training dataset.
 - **Enhanced Visualization**: Support additional visualization options, such as metrics tracking for model accuracy and loss curves during training.
+- **Perfecting Deep Learning Model**: Deep learning evaluation, visualization modules need more time. Enabling interrrupt during the training process, saving and loading pretrained models need to be done. 
 - **Hyperparameter Tuning**: Provide advanced options in the UI to allow users to fine-tune Mask R-CNN hyperparameters for improved model performance.
-
+- **Improving Based on User Feedback**: The software, modules and UI need to be improved based on user feedback.
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
